@@ -1,0 +1,30 @@
+{
+  "name": "nodepi-rc522",
+  "version": "0.0.1",
+  "description": "Node access to rc522 rfid module on raspberry pi",
+  "main": "rfid.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Joshua-Burleson/pi-node-rfid.git"
+  },
+  "keywords": [
+    "rfid",
+    "nodebot",
+    "node",
+    "bot",
+    "rfid",
+    "rc522"
+  ],
+  "author": "Joshua Burleson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Joshua-Burleson/pi-node-rfid/issues"
+  },
+  "homepage": "https://github.com/Joshua-Burleson/pi-node-rfid#readme",
+  "dependencies": {
+    "mfrc522-rpi": "^2.1.2"
+  }
+}
