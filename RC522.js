@@ -10,7 +10,6 @@ const defaultSPI = new SoftSPI({
 
 const defaultAuthKey = [0xff, 0xff, 0xff, 0xff, 0xff, 0xff];
 
-
 class RC522 extends Mfrc522 {
 
    constructor(authKey = defaultAuthKey, spiSettings = defaultSPI, resetPin = 22, buzzerPin = 18){
@@ -21,36 +20,44 @@ class RC522 extends Mfrc522 {
     }
 
 
-    readMode = ( mainThread ) => setInterval( () => {
+    readMode = ( mainThread ) => setInterval(() => {
         //# reset card
         this.reset();
 
-        //# Get the UID of the card
-        const response = this.getUid();
-
-        if ( !response.status ) {
-            // Emit scan-read error
-            mainThread.port.postMessage("UID Scan Error");
+        //# Scan for cards
+        const scanResponse = this.findCard();
+        if ( !scanResponse.status ) {
+            //console.log("No Card");
             return;
         }
+        //console.log("Card detected, CardType: " + response.bitSize);
 
+        //# Get the UID of the card
+        const response = this.getUid();
+        if (!response.status) {
+            //console.log("UID Scan Error");
+            return;
+        }
+        //# If we have the UID, continue
         const uid = response.data.reduce( (uidCode, char) => `${uidCode} ${char.toString(16)}`, '' );
-        //Emit card UID to parent thread
-        mainThread.port.postMessage(`Card read UID: ${uid}`);
+        //console.log(`Card read UID: ${uid}`);
+        mainThread.port.postMessage(`Card read UID: ${uid}`)
 
-        //# Key for authentication
+        //# Select the scanned card
+        const memoryCapacity = this.selectCard(uid);
+        //console.log("Card Memory Capacity: " + memoryCapacity);
+
+        //# This is the default key for authentication
         const key = this.authKey;
 
         //# Authenticate on Block 8 with key and uid
         if (!this.authenticate(8, key, uid)) {
-            //mainThread.port.postMessage("Authentication Error");
+            //console.log("Authentication Error");
             return;
         }
 
-        /*
-        const memCap = this.selectCard(uid);
-        //mainThread.port.postMessage("Card Memory Capacity: " + memoryCapacity);
-        */
+        //# Dump Block 8
+        //console.log("Block: 8 Data: " + this.getDataForBlock(8));
 
         //# Stop
         this.stopCrypto();
