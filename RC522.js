@@ -22,7 +22,6 @@ class RC522 extends Mfrc522 {
 
     readMode = callback =>  {
             //# reset card
-            this.reset();
 
             console.log('Running')
             //# Scan for cards
