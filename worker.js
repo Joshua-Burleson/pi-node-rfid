@@ -12,7 +12,6 @@ const { parentPort, MessagePort } = require('worker_threads');
 const mfrc522 = new Mfrc522();
 
 parentPort.on('message', (message) => {
-    console.log(message)
-    console.log(message.port.postMessage)
-    mfrc522.runReadMode(message);
+    console.log(message);
+    mfrc522.runReadMode(parentPort.postMessage);
 })
