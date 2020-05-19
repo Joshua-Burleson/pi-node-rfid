@@ -78,7 +78,7 @@ class RC522 extends Mfrc522 {
         this.#init(mode, interval, callback);
     }
 
-    #init = (operation, interval, callback) => this.activeOperation = setInterval(operation, callback, interval);
+    #init = (operation, interval, callback) => this.activeOperation = setInterval(operation, interval, callback);
 
 
     /* readMode = ( message ) => setInterval(() => {
