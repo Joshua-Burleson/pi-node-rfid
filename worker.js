@@ -3,10 +3,10 @@ const { parentPort, MessagePort } = require('worker_threads');
 
 const mfrc522 = new Mfrc522();
 
-parentPort.on('message', (message) => {
+parentPort.on('message', message => {
 
     switch( message.mode ) {
-        case 'read': mfrc522.readMode(message);
+        case 'read': mfrc522.readMode( message.port.postMessage );
                      break;
         
         case 'write': console.log('Write mode will go here');
