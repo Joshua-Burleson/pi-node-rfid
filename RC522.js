@@ -63,7 +63,7 @@ class RC522 extends Mfrc522 {
         this.stopCrypto();
         }, interval);
 
-    writeMode = (callback, interval) => this.#init(() => {
+    writeMode = (callback, interval) => this.init(() => {
         console.log(callback);
     }, interval)
 
