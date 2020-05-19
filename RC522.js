@@ -31,7 +31,7 @@ class RC522 extends Mfrc522 {
      * @param {cardReadCallback} callback
      * @param {number} interval - Interval frequency (in ms)
      */
-    readMode = (callback, interval = 500) => this.#init( () => {
+    readMode = (callback, interval = 500) => this.init( () => {
 
         const response = this.getUid();
 
@@ -83,7 +83,7 @@ class RC522 extends Mfrc522 {
      * @param {RC522Callback} callback
      * @param {number} interval - Interval frequency (in ms)
      */
-    #init = ( cb, interval ) => {
+    init = ( cb, interval ) => {
         this.reset();
         this.activeOperation = setInterval(cb, interval);
     }
