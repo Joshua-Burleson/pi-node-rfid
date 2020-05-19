@@ -20,7 +20,7 @@ class RC522 extends Mfrc522 {
     }
 
 
-    readMode = ( message ) => setInterval(() => {
+    /* readMode = ( message ) => setInterval(() => {
         //# reset card
         this.reset();
 
@@ -61,7 +61,7 @@ class RC522 extends Mfrc522 {
 
         //# Stop
         this.stopCrypto();
-        }, 500);
+        }, 500); */
 
 
 }
