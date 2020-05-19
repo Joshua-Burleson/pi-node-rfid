@@ -22,8 +22,7 @@ class RC522 extends Mfrc522 {
 
     readMode = message =>  {
             //# reset card
-
-            console.log('Running')
+            console.log(message)
             //# Scan for cards
             let response = this.findCard();
             if (!response.status) {
