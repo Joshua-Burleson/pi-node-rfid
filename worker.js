@@ -14,5 +14,5 @@ const mfrc522 = new Mfrc522();
 
 parentPort.on('message', (message) => {
     console.log(message);
-    mfrc522.runReadMode(port2.postMessage);
+    mfrc522.runReadMode(port1.postMessage);
 })
