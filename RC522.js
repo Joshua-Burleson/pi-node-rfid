@@ -37,7 +37,7 @@ class RC522 extends Mfrc522 {
 
         if ( ! response.status ) {
             // Emit scan-read error
-            callback("UID Scan Error");
+            //callback("UID Scan Error");
             return;
         }
 
