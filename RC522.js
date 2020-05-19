@@ -20,8 +20,7 @@ class RC522 extends Mfrc522 {
          this.activeOperation = null;
     }
 
-    readMode = callback => {
-        this.#init( () => {
+    readMode = callback =>  {
             //# reset card
             this.reset();
     
@@ -62,8 +61,7 @@ class RC522 extends Mfrc522 {
     
             //# Stop
             this.stopCrypto();
-            }, 500, callback);
-    }
+            }
 
     reset = () => {
         super.reset();
@@ -71,7 +69,7 @@ class RC522 extends Mfrc522 {
         this.activeOperation = null;
     }
 
-    runReadMode = (callback, interval) => this.#run(this.readMode, interval, callback);
+    runReadMode = (callback, interval = 500) => this.#run(this.readMode, interval, callback);
 
     #run = (mode, interval, callback) => {
         this.reset();
