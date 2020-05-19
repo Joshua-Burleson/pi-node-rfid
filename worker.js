@@ -13,5 +13,5 @@ const mfrc522 = new Mfrc522();
 
 parentPort.on('message', (message) => {
     console.log(message)
-    mfrc522.readMode(message);
+    mfrc522.readMode(message.port.postMessage);
 })
