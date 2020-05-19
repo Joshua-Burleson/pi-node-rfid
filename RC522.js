@@ -21,7 +21,7 @@ class RC522 extends Mfrc522 {
     }
 
     readMode = message => {
-        this.init( () => {
+        this.#init( () => {
             //# reset card
             this.reset();
     
@@ -65,7 +65,7 @@ class RC522 extends Mfrc522 {
             }, 500);
     }
 
-    init = (operation, interval) => this.activeOperation = setInterval(operation, interval);
+    #init = (operation, interval) => this.activeOperation = setInterval(operation, interval);
 
 
     /* readMode = ( message ) => setInterval(() => {
