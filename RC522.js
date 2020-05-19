@@ -42,6 +42,7 @@ class RC522 extends Mfrc522 {
             //# If we have the UID, continue
             const uid = response.data.reduce( (uidCode, char) => `${uidCode} ${char.toString(16)}`, '' );
             //console.log(`Card read UID: ${uid}`);
+            console.log(`Inside: Card read UID: ${uid}`)
             callback(`Card read UID: ${uid}`)
     
             //# Select the scanned card
