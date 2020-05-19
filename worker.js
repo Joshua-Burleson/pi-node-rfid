@@ -1,6 +1,7 @@
 "use strict";
 const Mfrc522 = require("./RC522");
 const { parentPort, MessagePort } = require('worker_threads');
+const { port1, port2 } = new MessageChannel()
 
 //# This loop keeps checking for chips. If one is near it will get the UID and authenticate
 //console.log("scanning...");
@@ -13,5 +14,5 @@ const mfrc522 = new Mfrc522();
 
 parentPort.on('message', (message) => {
     console.log(message);
-    mfrc522.runReadMode(parentPort.postMessage);
+    mfrc522.runReadMode(port2.postMessage);
 })
