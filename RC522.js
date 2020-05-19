@@ -20,7 +20,7 @@ class RC522 extends Mfrc522 {
     }
 
     readMode = message => {
-        setInterval(function() {
+        setInterval( () => {
             //# reset card
             this.reset();
     
