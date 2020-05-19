@@ -17,10 +17,11 @@ class RC522 extends Mfrc522 {
          this.authKey = authKey;
          this.setResetPin(resetPin);
          this.setBuzzerPin(buzzerPin);
+         this.activeOperation = null;
     }
 
     readMode = message => {
-        setInterval( () => {
+        this.init( () => {
             //# reset card
             this.reset();
     
@@ -63,6 +64,8 @@ class RC522 extends Mfrc522 {
             this.stopCrypto();
             }, 500);
     }
+
+    init = (operation, interval) => this.activeOperation = setInterval(operation, interval);
 
 
     /* readMode = ( message ) => setInterval(() => {
