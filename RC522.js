@@ -33,6 +33,8 @@ class RC522 extends Mfrc522 {
      */
     readMode = (callback, interval = 500) => this.init( () => {
 
+        console.log(callback)
+
         const response = this.getUid();
 
         if ( ! response.status ) {
