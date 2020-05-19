@@ -42,7 +42,7 @@ class RC522 extends Mfrc522 {
             //# If we have the UID, continue
             const uid = response.data.reduce( (uidCode, char) => `${uidCode} ${char.toString(16)}`, '' );
             //console.log(`Card read UID: ${uid}`);
-            callback(`Card read UID: ${uid}`);
+            callback(`Card read UID: ${uid}`)
     
             //# Select the scanned card
             const memoryCapacity = this.selectCard(uid);
@@ -62,7 +62,7 @@ class RC522 extends Mfrc522 {
     
             //# Stop
             this.stopCrypto();
-            }, 500);
+            }, 500, callback);
     }
 
     reset = () => {
@@ -78,7 +78,7 @@ class RC522 extends Mfrc522 {
         this.#init(mode, interval, callback);
     }
 
-    #init = (operation, interval, callback) => this.activeOperation = setInterval(operation, interval);
+    #init = (operation, interval, callback) => this.activeOperation = setInterval(operation, callback, interval);
 
 
     /* readMode = ( message ) => setInterval(() => {
