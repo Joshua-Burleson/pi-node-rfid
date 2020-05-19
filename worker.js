@@ -1,6 +1,6 @@
 "use strict";
 const Mfrc522 = require("./RC522");
-const { parentPort, MessagePort } = require('worker_threads');
+const { parentPort, MessagePort, MessageChannel } = require('worker_threads');
 const { port1, port2 } = new MessageChannel()
 
 //# This loop keeps checking for chips. If one is near it will get the UID and authenticate
