@@ -40,7 +40,7 @@ class RC522 extends Mfrc522 {
                 return callback(cardData);
             }
             //# If we have the UID, continue
-            console.log(response.data);
+            console.log(response);
             const uid = response.data.reduce( (uidCode, char) => `${uidCode} ${char.toString(16)}`, '' );
             cardData.uid = uid;
     
