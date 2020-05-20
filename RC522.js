@@ -21,14 +21,14 @@ class RC522 extends Mfrc522 {
     }
 
     readMode = callback =>  {
-            const scan = this.findCard();
-            if (!scan.status) {
+            let response = this.findCard();
+            if (!response.status) {
                 return;
             }
             //console.log("Card detected, CardType: " + response.bitSize);
     
             //# Get the UID of the card
-            const response = this.getUid();
+            response = this.getUid();
             if (!response.status) {
                 //console.log("UID Scan Error");
                 return;
