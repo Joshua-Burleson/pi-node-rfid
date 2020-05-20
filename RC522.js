@@ -42,7 +42,7 @@ class RC522 extends Mfrc522 {
             //console.log("Card Memory Capacity: " + memoryCapacity);
     
             //# Authenticate on Block 8 with key and uid
-            if (!this.authenticate(8, this.authKeykey, uid)) {
+            if (!this.authenticate(8, this.authKey, uid)) {
                 //console.log("Authentication Error");
                 return;
             }
