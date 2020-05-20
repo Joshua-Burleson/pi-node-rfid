@@ -21,37 +21,35 @@ class RC522 extends Mfrc522 {
     }
 
     readMode = callback =>  {
-            let response = this.findCard();
-            if (!response.status) {
+            const cardData = {
+                uid: null,
+                auth: true,
+                memory_capacity: null,
+                read_error: false
+            };
+            const scan = this.findCard();
+            if (!scan.status) {
                 return;
             }
             //console.log("Card detected, CardType: " + response.bitSize);
     
             //# Get the UID of the card
-            response = this.getUid();
+            const response = this.getUid();
             if (!response.status) {
-                //console.log("UID Scan Error");
-                return;
+                cardData.read_error = true;
+                return callback(cardData);
             }
             //# If we have the UID, continue
             const uid = response.data.reduce( (uidCode, char) => `${uidCode} ${char.toString(16)}`, '' );
-            callback(`Card read UID: ${uid}`);
-    
-            //# Select the scanned card
-            const memoryCapacity = this.selectCard(uid);
-            //console.log("Card Memory Capacity: " + memoryCapacity);
+            cardData.uid = uid;
     
             //# Authenticate on Block 8 with key and uid
             if (!this.authenticate(8, this.authKey, uid)) {
-                //console.log("Authentication Error");
-                return;
+                cardData.auth = false;
             }
-    
-            //# Dump Block 8
-            //console.log("Block: 8 Data: " + this.getDataForBlock(8));
-    
-            //# Stop
+
             this.stopCrypto();
+            callback(cardData);
             }
 
     reset = () => {
