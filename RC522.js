@@ -55,8 +55,8 @@ class RC522 extends Mfrc522 {
                 read_error: true,
                 error_message: err
             });
-            console.error('An unhandled error has occured in read mode. Restarting read process.');
-            this.runReadMode();
+            console.error('An unhandled error has occured in read mode. Restarting read process at default interval of 500ms.');
+            this.runReadMode(callback)
         }
     }
 
