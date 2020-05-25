@@ -8,6 +8,7 @@ const defaultSPI = new SoftSPI({
     client: 24 // pin number of CS
   });
 
+// Most common default authkey
 const defaultAuthKey = [0xff, 0xff, 0xff, 0xff, 0xff, 0xff];
 
 class RC522 extends Mfrc522 {
@@ -24,6 +25,7 @@ class RC522 extends Mfrc522 {
             const cardData = {
                 uid: null,
                 auth: true,
+                bitSize: 0,
                 memory_capacity: null,
                 read_error: false
             };
@@ -40,14 +42,13 @@ class RC522 extends Mfrc522 {
                 return callback(cardData);
             }
             //# If we have the UID, continue
-            console.log(response);
-            const uid = response.data.reduce( (uidCode, char) => `${uidCode} ${char.toString(16)}`, '' );
+            const uid = response.data.reduce( (uidCode, char, index) => `${uidCode.concat(char.toString(16))}${index === response.data.length - 1 ? '' : ' '}`, '' );
             cardData.uid = uid;
-    
+            
+            // Retrieve card bit size 
+            cardData.bitSize = this.selectCard(uid);
             //# Authenticate on Block 8 with key and uid
-            if (!this.authenticate(8, this.authKey, uid)) {
-                cardData.auth = false;
-            }
+            cardData.auththis.authenticate(8, this.authKey, uid);
 
             this.stopCrypto();
             callback(cardData);
@@ -59,14 +60,12 @@ class RC522 extends Mfrc522 {
         this.activeOperation = null;
     }
 
-    runReadMode = (callback, interval = 500) => this.#run(this.readMode, interval, callback);
+    runReadMode = (callback, interval = 500) => this.#init(this.readMode, interval, callback);
 
-    #run = (mode, interval, callback) => {
+    #init = (operation, interval, callback) => {
         this.reset();
-        this.#init(mode, interval, callback);
+        this.activeOperation = setInterval(operation, interval, callback);
     }
-
-    #init = (operation, interval, callback) => this.activeOperation = setInterval(operation, interval, callback);
 
 }
 
