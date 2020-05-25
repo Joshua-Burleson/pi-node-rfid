@@ -13,12 +13,12 @@ const defaultAuthKey = [0xff, 0xff, 0xff, 0xff, 0xff, 0xff];
 
 class RC522 extends Mfrc522 {
 
-   constructor(authKey = defaultAuthKey, pinSettings = {spiSettings: defaultSPI, resetPin: 22, buzzerPin: 18}){
-         super(pinSettings.spiSettings);
+   constructor(authKey = defaultAuthKey, {spiSettings = defaultSPI, resetPin = 22, buzzerPin = 18} = {spiSettings: defaultSPI, resetPin: 22, buzzerPin: 18}){
+         super(spiSettings);
         //  Constant
          this.authKey = authKey;
-         this.setResetPin(pinSettings.resetPin);
-         this.setBuzzerPin(pinSettings.buzzerPin);
+         this.setResetPin(resetPin);
+         this.setBuzzerPin(buzzerPin);
         //  Stateful
          this.activeOperation = null;
          this.faultCount = 0;
