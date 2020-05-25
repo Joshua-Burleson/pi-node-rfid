@@ -29,26 +29,31 @@ class RC522 extends Mfrc522 {
                 memory_capacity: null,
                 read_error: false
             };
-            const scan = this.findCard();
-            if (!scan.status) {
-                return;
+            try {
+                const scan = this.findCard();
+                if (!scan.status) {
+                    return;
+                }
+
+                const response = this.getUid();
+                if (!response.status) {
+                    cardData.read_error = true;
+                    return callback(cardData);
+                }
+                
+                // Set cardData values
+                cardData.bitSize = response.bitSize;
+                cardData.uid = response.data.reduce( (uidCode, char, index) => `${uidCode.concat(char.toString(16))}${index === response.data.length - 1 ? '' : ' '}`, '' );
+                cardData.memory_capacity = this.selectCard(response.data);
+                cardData.auth = this.authenticate(8, this.authKey, response.data);
+
+            } catch ( err ){
+                callback({
+                    ...cardData,
+                    read_error: true,
+                    error_message: err
+                });
             }
-            //console.log("Card detected, CardType: " + response.bitSize);
-    
-            //# Get the UID of the card
-            const response = this.getUid();
-            if (!response.status) {
-                cardData.read_error = true;
-                return callback(cardData);
-            }
-            //# If we have the UID, continue
-            const uid = response.data.reduce( (uidCode, char, index) => `${uidCode.concat(char.toString(16))}${index === response.data.length - 1 ? '' : ' '}`, '' );
-            cardData.uid = uid;
-            
-            // Retrieve card bit size 
-            cardData.bitSize = this.selectCard(response.data);
-            //# Authenticate on Block 8 with key and uid
-            cardData.auth = this.authenticate(8, this.authKey, response.data);
 
             this.stopCrypto();
             callback(cardData);
