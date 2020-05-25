@@ -109,9 +109,9 @@ class RC522 extends Mfrc522 {
     }
 
     // Middleware
-    faultCheck = next => {
+    faultCheck = (next, nextArgs = []) => {
         if( this.faultCount < 100){
-            return next();
+            return next(...nextArgs);
         }else{
             console.log( `Fault Limit ( ${this.faultCount} ) reached. Killing the current RC522 process.` );
             this.#kill();
@@ -126,7 +126,7 @@ class RC522 extends Mfrc522 {
     // Object Utility Methods
     reset = () => {
         super.reset();
-        this.faultCheck( clearInterval(this.activeOperation) );
+        this.faultCheck( clearInterval, [ this.activeOperation ] );
         this.activeOperation = null;
     }
     #init = (operation, interval, callback) => {
