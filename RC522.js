@@ -13,12 +13,15 @@ const defaultAuthKey = [0xff, 0xff, 0xff, 0xff, 0xff, 0xff];
 
 class RC522 extends Mfrc522 {
 
-   constructor(authKey = defaultAuthKey, spiSettings = defaultSPI, resetPin = 22, buzzerPin = 18){
+   constructor({authKey= defaultAuthKey, spiSettings = defaultSPI, resetPin = 22, buzzerPin = 18}){
          super(spiSettings);
+        //  Constant
          this.authKey = authKey;
          this.setResetPin(resetPin);
          this.setBuzzerPin(buzzerPin);
+        //  Stateful
          this.activeOperation = null;
+         this.faultCount = 0;
     }
 
     readMode = callback =>  {
@@ -48,15 +51,18 @@ class RC522 extends Mfrc522 {
             cardData.auth = this.authenticate(8, this.authKey, response.data);
             this.stopCrypto();
             callback(cardData);
+            this.faultCount = 0;
         } catch ( err ){
             this.reset();
+            ++ this.faultCount;
             callback({
                 ...cardData,
                 read_error: true,
-                error_message: err
+                error_message: err,
+                concurrent_fault_count: this.faultCount
             });
             console.error('An unhandled error has occured in read mode. Restarting read process at default interval of 500ms.');
-            this.runReadMode(callback)
+            this.runReadMode(callback);
         }
     }
 
