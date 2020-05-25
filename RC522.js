@@ -48,7 +48,7 @@ class RC522 extends Mfrc522 {
             // Retrieve card bit size 
             cardData.bitSize = this.selectCard(uid);
             //# Authenticate on Block 8 with key and uid
-            cardData.auththis.authenticate(8, this.authKey, uid);
+            cardData.auth = this.authenticate(8, this.authKey, uid);
 
             this.stopCrypto();
             callback(cardData);
