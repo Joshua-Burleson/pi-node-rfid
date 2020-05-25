@@ -1,15 +1,6 @@
 const Mfrc522 = require("mfrc522-rpi");
-const SoftSPI = require("rpi-softspi");
+const { defaultAuthKey, defaultSPI } = require('./lib/defaults');
 
-const defaultSPI = new SoftSPI({
-    clock: 23, // pin number of SCLK
-    mosi: 19, // pin number of MOSI
-    miso: 21, // pin number of MISO
-    client: 24 // pin number of CS
-  });
-
-// Most common default authkey
-const defaultAuthKey = [0xff, 0xff, 0xff, 0xff, 0xff, 0xff];
 
 class RC522 extends Mfrc522 {
 
@@ -37,7 +28,10 @@ class RC522 extends Mfrc522 {
             auth: true,
             bitSize: 0,
             memory_capacity: null,
-            read_error: false
+            read_error: false,
+            raw: {
+                uid_data: null
+            }
         };
         try {
             const scan = this.findCard();
@@ -56,6 +50,8 @@ class RC522 extends Mfrc522 {
             cardData.uid = response.data.reduce( (uidCode, char, index) => `${uidCode.concat(char.toString(16))}${index === response.data.length - 1 ? '' : ' '}`, '' );
             cardData.memory_capacity = this.selectCard(response.data);
             cardData.auth = this.authenticate(8, this.authKey, response.data);
+            // Set cardData raw
+            cardData.raw.uid_data = response.data;
             
             this.stopCrypto();
             callback(cardData);
@@ -84,7 +80,7 @@ class RC522 extends Mfrc522 {
         try {
             this.reset();
             // Validation
-            if (!address || !newKey) {
+            if ( !(address && newKey) ) {
                 return callback({...result, write_error: true, message: 'Ensure address-block and new key are defined'});
             }
             if (address % 4 !== 3) {
@@ -125,6 +121,11 @@ class RC522 extends Mfrc522 {
         this.reset();
         this.interruptable = { operation, callback, interval };
         this.activeOperation = setInterval(operation, interval, callback);
+    }
+    #kill = () => {
+        this.reset();
+        this.interruptable = null;
+        console.log('RFID Processes Killed');
     }
 
 }
