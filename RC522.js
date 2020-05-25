@@ -50,7 +50,7 @@ class RC522 extends Mfrc522 {
             cardData.uid = response.data.reduce( (uidCode, char, index) => `${uidCode.concat(char.toString(16))}${index === response.data.length - 1 ? '' : ' '}`, '' );
             cardData.memory_capacity = this.selectCard(response.data);
             cardData.auth = this.authenticate(8, this.authKey, response.data);
-            // Set cardData raw
+            // Set "raw" cardData
             cardData.raw.uid_data = response.data;
             
             this.stopCrypto();
@@ -108,13 +108,25 @@ class RC522 extends Mfrc522 {
         }
     }
 
+    // Middleware
+    faultCheck = next => {
+        if( this.faultCount < 100){
+            return next();
+        }else{
+            console.log( `Fault Limit ( ${this.faultCount} ) reached. Killing the current RC522 process.` );
+            this.#kill();
+            return new Error(`Fault Limit ( ${this.faultCount} ) reached. Killing the current RC522 process.`);
+        }
+    }
+
     // User-Friendlier Methods
     runReadMode = (callback, interval = 500) => this.#init(this.readMode, interval, callback);
+
 
     // Object Utility Methods
     reset = () => {
         super.reset();
-        clearInterval(this.activeOperation);
+        this.faultCheck( clearInterval(this.activeOperation) );
         this.activeOperation = null;
     }
     #init = (operation, interval, callback) => {
@@ -125,6 +137,7 @@ class RC522 extends Mfrc522 {
     #kill = () => {
         this.reset();
         this.interruptable = null;
+        this.antennaOff();
         console.log('RFID Processes Killed');
     }
 
