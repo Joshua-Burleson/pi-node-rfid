@@ -42,7 +42,7 @@ class RC522 extends Mfrc522 {
                 }
                 
                 // Set cardData values
-                cardData.bitSize = response.bitSize;
+                cardData.bitSize = scan.bitSize;
                 cardData.uid = response.data.reduce( (uidCode, char, index) => `${uidCode.concat(char.toString(16))}${index === response.data.length - 1 ? '' : ' '}`, '' );
                 cardData.memory_capacity = this.selectCard(response.data);
                 cardData.auth = this.authenticate(8, this.authKey, response.data);
