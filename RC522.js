@@ -49,11 +49,14 @@ class RC522 extends Mfrc522 {
             this.stopCrypto();
             callback(cardData);
         } catch ( err ){
+            this.reset();
             callback({
                 ...cardData,
                 read_error: true,
                 error_message: err
             });
+            console.error('An unhandled error has occured in read mode. Restarting read process.');
+            this.runReadMode();
         }
     }
 
