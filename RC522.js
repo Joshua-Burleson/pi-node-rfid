@@ -22,42 +22,40 @@ class RC522 extends Mfrc522 {
     }
 
     readMode = callback =>  {
-            const cardData = {
-                uid: null,
-                auth: true,
-                bitSize: 0,
-                memory_capacity: null,
-                read_error: false
-            };
-            try {
-                const scan = this.findCard();
-                if (!scan.status) {
-                    return;
-                }
-
-                const response = this.getUid();
-                if (!response.status) {
-                    cardData.read_error = true;
-                    return callback(cardData);
-                }
-                
-                // Set cardData values
-                cardData.bitSize = scan.bitSize;
-                cardData.uid = response.data.reduce( (uidCode, char, index) => `${uidCode.concat(char.toString(16))}${index === response.data.length - 1 ? '' : ' '}`, '' );
-                cardData.memory_capacity = this.selectCard(response.data);
-                cardData.auth = this.authenticate(8, this.authKey, response.data);
-
-            } catch ( err ){
-                callback({
-                    ...cardData,
-                    read_error: true,
-                    error_message: err
-                });
+        const cardData = {
+            uid: null,
+            auth: true,
+            bitSize: 0,
+            memory_capacity: null,
+            read_error: false
+        };
+        try {
+            const scan = this.findCard();
+            if (!scan.status) {
+                return;
             }
 
+            const response = this.getUid();
+            if (!response.status) {
+                cardData.read_error = true;
+                return callback(cardData);
+            }
+            
+            // Set cardData values
+            cardData.bitSize = scan.bitSize;
+            cardData.uid = response.data.reduce( (uidCode, char, index) => `${uidCode.concat(char.toString(16))}${index === response.data.length - 1 ? '' : ' '}`, '' );
+            cardData.memory_capacity = this.selectCard(response.data);
+            cardData.auth = this.authenticate(8, this.authKey, response.data);
             this.stopCrypto();
             callback(cardData);
-            }
+        } catch ( err ){
+            callback({
+                ...cardData,
+                read_error: true,
+                error_message: err
+            });
+        }
+    }
 
     reset = () => {
         super.reset();
