@@ -73,7 +73,7 @@ class RC522 extends Mfrc522 {
     }
 
     // Write modes
-    writeAuthenticationKey( callback, {newKey, address = this.authBlock} ){
+    writeAuthenticationKey = ( callback, {newKey, address = this.authBlock} ) => {
         const result = {
             newKey: null,
             write_error: true,
