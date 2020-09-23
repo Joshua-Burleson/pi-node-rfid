@@ -6,5 +6,23 @@ const RFIDReader = new Mfrc522();
 
 parentPort.on('message', (message) => {
     const reply = (res) => message.port.postMessage(res);
-    RFIDReader.runReadMode(reply);
+    RFIDReader.writeNewAuthKey( [
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00
+      ], reply);
 });

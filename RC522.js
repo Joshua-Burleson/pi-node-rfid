@@ -4,7 +4,7 @@ const { defaultAuthKey, defaultSPI } = require('./lib/defaults');
 
 class RC522 extends Mfrc522 {
 
-   constructor( {authKey = defaultAuthKey, authBlock= 10, spiSettings = defaultSPI, resetPin = 22, buzzerPin = 18} = {} ){
+   constructor( {authKey = defaultAuthKey, authBlock= 10, spiSettings = defaultSPI, resetPin = 22, buzzerPin = 18, faultMax = 100} = {} ){
          super(spiSettings);
         //  Constant
          this.authKey = authKey;
@@ -18,6 +18,7 @@ class RC522 extends Mfrc522 {
              callback: null,
              interval: null
          };
+         this.faultMax = faultMax;
          this.faultCount = 0;
     }
 
@@ -61,6 +62,7 @@ class RC522 extends Mfrc522 {
             ++ this.faultCount;
             callback({
                 ...cardData,
+                auth: false,
                 read_error: true,
                 message: err,
                 concurrent_fault_count: this.faultCount
@@ -71,14 +73,15 @@ class RC522 extends Mfrc522 {
     }
 
     // Write modes
-    writeAuthenticationKey( newKey, callback, address = this.authBlock ){
+    writeAuthenticationKey( callback, {newKey, address = this.authBlock} ){
         const result = {
             newKey: null,
             write_error: true,
             message: null
         };
         try {
-            this.reset();
+            if( !this.getUid().status ) return;
+            //this.reset();
             // Validation
             if ( !(address && newKey) ) {
                 return callback({...result, write_error: true, message: 'Ensure address-block and new key are defined'});
@@ -100,7 +103,8 @@ class RC522 extends Mfrc522 {
             }
             // Write new key
             const newData = newKey.concat(this.getDataForBlock(address).slice(6));
-            callback( this.writeDataToBlock(address, newData) );
+            console.log(newData)
+            callback( this.writeDataToBlock(address, this.authKey ) );
             return this.interruptable ? this.#init( ...Object.values(this.interruptable) ) : newKey;
         } catch (err) {
             console.error(err);
@@ -110,7 +114,7 @@ class RC522 extends Mfrc522 {
 
     // Middleware
     faultCheck = (next, nextArgs = []) => {
-        if( this.faultCount < 100){
+        if( this.faultCount < this.faultMax ){
             return next(...nextArgs);
         }else{
             console.log( `Fault Limit ( ${this.faultCount} ) reached. Killing the current RC522 process.` );
@@ -120,19 +124,37 @@ class RC522 extends Mfrc522 {
     }
 
     // User-Friendlier Methods
-    runReadMode = (callback, interval = 500) => this.#init(this.readMode, interval, callback);
-
+    runReadMode = (callback, interval = 500) => {
+        console.log('Starting Antenna in Read-Mode');
+        this.#init(this.readMode, interval, callback);
+    }
+    writeNewAuthKey = ( newKey, callback, interval = 500) => {
+        console.log('Starting Antenna in Write-Mode');
+        this.#init(this.readMode, interval, callback, newKey);
+    }
+    setNewKey = newKey => {
+        this.setAuth(newKey);
+        this.restart();
+    }
 
     // Object Utility Methods
+    setAuth = newAuthKey => this.authKey = newAuthKey;
+    restart = () => {
+        if( ! this.interruptable ) return console.log('No active operation to restart');
+        const { operation, interval, callback } = this.interruptable;
+        this.faultCheck( clearInterval, [ this.activeOperation ] );
+        this.activeOperation = null;
+        this.#init( operation, interval, callback );
+    }
     reset = () => {
         super.reset();
         this.faultCheck( clearInterval, [ this.activeOperation ] );
         this.activeOperation = null;
     }
-    #init = (operation, interval, callback) => {
+    #init = (operation, interval, callback, ...operationArgs) => {
         this.reset();
         this.interruptable = { operation, callback, interval };
-        this.activeOperation = setInterval(operation, interval, callback);
+        this.activeOperation = setInterval(operation, interval, callback, ...operationArgs );
     }
     #kill = () => {
         this.reset();
