@@ -131,7 +131,7 @@ class RC522 extends Mfrc522 {
     }
     writeNewAuthKey = ( newKey, callback, interval = 500) => {
         console.log('Starting Antenna in Write-Mode');
-        this.#init(this.readMode, interval, callback, newKey);
+        this.#init(this.writeAuthenticationKey, interval, callback, newKey);
     }
     setNewKey = newKey => {
         this.setAuth(newKey);
