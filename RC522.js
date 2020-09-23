@@ -80,7 +80,10 @@ class RC522 extends Mfrc522 {
             message: null
         };
         try {
-            if( !this.getUid().status ) return;
+            if( !this.findCard().status || !this.getUid().status ){
+                console.log('No card');
+                return;
+            }
             //this.reset();
             // Validation
             if ( !(address && newKey) ) {
