@@ -102,6 +102,7 @@ class RC522 extends Mfrc522 {
                 });
             }
             // Write new key
+            console.log('Okay so far');
             const newData = newKey.concat(this.getDataForBlock(address).slice(6));
             console.log(newData)
             callback( this.writeDataToBlock(address, this.authKey ) );
