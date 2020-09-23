@@ -6,7 +6,7 @@ const RFIDReader = new Mfrc522();
 
 parentPort.on('message', (message) => {
     const reply = (res) => message.port.postMessage(res);
-    RFIDReader.writeNewAuthKey( [
+    RFIDReader.writeNewAuthKey( { newKey: [
         0x00,
         0x00,
         0x00,
@@ -24,5 +24,5 @@ parentPort.on('message', (message) => {
         0x00,
         0x00,
         0x00
-      ], reply);
+      ]}, reply);
 });
