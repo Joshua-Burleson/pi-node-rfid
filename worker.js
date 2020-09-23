@@ -24,5 +24,5 @@ parentPort.on('message', (message) => {
         0x00,
         0x00,
         0x00
-      ]}, reply);
+      ], address: 11}, reply);
 });
